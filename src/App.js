@@ -1,23 +1,73 @@
-import logo from './logo.svg';
-import './App.css';
+import "./index.css";
+import { useState } from "react";
 
 function App() {
+  const [calc, setCalc] = useState("");
+  const [result, setResult] = useState("");
+
+  const ops = ["/", "*", "+", "-", "."];
+
+  const updateVal = (value) => {
+    if (
+      (ops.includes(value) && calc === "") ||
+      (ops.includes(value) && ops.includes(calc.slice(-1)))
+    ) {
+      return;
+    }
+    setCalc(calc + value);
+
+    if (!ops.includes(value)) {
+      setResult(eval(calc + value).toString());
+    }
+  };
+
+  const createDigits = () => {
+    const digits = [];
+    for (let i = 1; i <= 9; i++) {
+      digits.push(
+        <button onClick={() => updateVal(i.toString())} key={i}>
+          {i}
+        </button>
+      );
+    }
+    return digits;
+  };
+
+  const calculate = () => {
+    setCalc(setResult(eval(calc).toString()));
+  };
+
+  const delLast = () => {
+    if(calc === ""){
+      return;
+    }
+
+    const value=calc.slice(0,-1);
+    setCalc(value);
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="calculator">
+        <div className="display">
+          {/* <span>(0)</span> {calc} */}
+          {result ? <span>({result})</span> : ""}
+          {calc || 0}
+        </div>
+        <div className="operators">
+          <button onClick={() => updateVal("/")}>/</button>
+          <button onClick={() => updateVal("*")}>*</button>
+          <button onClick={() => updateVal("+")}>+</button>
+          <button onClick={() => updateVal("-")}>-</button>
+          <button onClick={delLast}>DEL</button>
+        </div>
+        <div className="digits">
+          {createDigits()}
+          <button onClick={() => updateVal("0")}>0</button>
+          <button onClick={() => updateVal(".")}>.</button>
+          <button onClick={calculate}>=</button>
+        </div>
+      </div>
     </div>
   );
 }
